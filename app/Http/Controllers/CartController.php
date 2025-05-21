@@ -62,23 +62,25 @@ class CartController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'quantity' => 'required|integer|min:1',
+        $cart = Cart::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+
+        $validated = $request->validate([
+            'quantity' => 'required|integer|min:1'
         ]);
 
-        $cartItem = Cart::findOrFail($id);
-        $cartItem->quantity = $request->quantity;
-        $cartItem->save();
+        $cart->quantity = $validated['quantity'];
+        $cart->save();
 
-        return redirect()->back()->with('success', 'Cart updated successfully.');
+        return response()->json(['success' => true, 'quantity' => $cart->quantity]);
     }
+
 
     public function remove($id)
     {
-        $cartItem = Cart::findOrFail($id);
-        $cartItem->delete();
+        $cart = Cart::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        $cart->delete();
 
-        return redirect()->back()->with('success', 'Item removed from cart.');
+        return response()->json(['success' => true]);
     }
 
 

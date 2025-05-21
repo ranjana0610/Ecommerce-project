@@ -50,6 +50,7 @@ Route::middleware([
         Route::get('/product/createproduct', [ProductController::class, 'createproduct'])->name('product.add');
         Route::post('/product/storeproduct', [ProductController::class, 'storeproduct'])->name('product.store');
         Route::get('/product/viewproduct', [ProductController::class, 'viewproduct'])->name('product.view');
+        Route::get('/products/data', [ProductController::class, 'getProducts'])->name('products.data');
         Route::get('/product/edit/{id}', [ProductController::class, 'edit'])->name('product.edit');
         Route::delete('/product/delete/{id}', [ProductController::class, 'destroy'])->name('product.delete');
         Route::put('/product/update/{id}', [ProductController::class, 'update'])->name('product.update');
@@ -68,8 +69,9 @@ Route::middleware([
     Route::post('/add-to-cart', [CartController::class, 'addToCart'])->middleware('auth');
     Route::get('/cart', [CartController::class, 'showCart'])->middleware('auth');
 
-    Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::put('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
     
 
 

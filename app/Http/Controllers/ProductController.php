@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Http\DB;
 
 class ProductController extends Controller
 {
@@ -15,11 +16,62 @@ class ProductController extends Controller
     }
     public function viewproduct()
     {
-        $products = Product::all();
-
-        return view('backend.viewproduct', compact('products'));
+        $products = Product::with('category')->paginate(10);
+    return view('backend.viewproduct', compact('products'));
     }
-    
+
+   public function getProducts(Request $request)
+    {
+        $columns = ['title', 'category_id', 'size', 'price', 'description'];
+
+        $totalRecords = Product::count();
+
+        $query = Product::with('category');
+
+        if ($search = $request->input('search.value')) {
+            $query->where('title', 'like', "%{$search}%")
+                ->orWhereHas('category', function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%");
+                });
+        }
+
+        $filteredRecords = $query->count();
+
+        $products = $query
+            ->offset($request->input('start'))
+            ->limit($request->input('length'))
+            ->get();
+
+        $data = [];
+        foreach ($products as $product) {
+            $images = is_string($product->images) ? json_decode($product->images, true) : $product->images;
+            $firstImage = is_array($images) && count($images) > 0 ? asset($images[0]) : 'No Image';
+
+            $imageHtml = is_array($images) && count($images) > 0 ? '<img src="' . $firstImage . '" width="50">' : '<span>No Image</span>';
+
+            $data[] = [
+                $product->title,
+                $product->category->title,
+                $product->size,
+                $product->price,
+                $product->description,
+                $imageHtml,
+                '<a href="' . route('product.edit', $product->id) . '" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
+                <form method="POST" action="' . route('product.delete', $product->id) . '" style="display:inline-block;">' .
+                csrf_field() . method_field('DELETE') . '
+                <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>
+                </form>'
+            ];
+        }
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $data,
+        ]);
+    }
+
     public function storeproduct(Request $request)
     {
         $request->validate([

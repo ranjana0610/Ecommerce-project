@@ -13,6 +13,8 @@
       href="img/kaiadmin/favicon.ico"
       type="image/x-icon"
     />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
 
     <!-- Fonts and icons -->
     <script src="js/plugin/webfont/webfont.min.js"></script>
@@ -936,6 +938,28 @@ function previewImage(event) {
 
   reader.readAsDataURL(file);
 }
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $('#product-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": "{{ route('products.data') }}",
+        "columns": [
+            { "title": "Title" },
+            { "title": "Category" },
+            { "title": "Size" },
+            { "title": "Price" },
+            { "title": "Description" },
+            { "title": "Image", "orderable": false, "searchable": false },
+            { "title": "Action", "orderable": false, "searchable": false }
+        ]
+    });
+});
+
 </script>
 
 

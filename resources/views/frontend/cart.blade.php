@@ -18,15 +18,15 @@
                 <div class="cart">
                     <div class="cart-header">
                         <h2>Shopping cart</h2>
-                        <div class="cart-actions">
+                        <!-- <div class="cart-actions">
                             <span>No item Selected</span>
                             <a href="#">Select all items</a>
-                        </div>
+                        </div> -->
                     </div>
                     <hr />
                     @foreach($cartItems as $item)
                     <div class="cart-item">
-                        <input type="checkbox" />
+                        <!-- <input type="checkbox" /> -->
                        @php
                             $images = json_decode($item->product->images ?? '[]', true);
                             $firstImage = isset($images[0]) ? str_replace('\\', '/', $images[0]) : 'default.jpg';
@@ -37,26 +37,13 @@
                         <div class="product-details">
                             <h3>{{ $item->product->title ?? 'Product Name' }}</h3>
                             <p><strong>Size :</strong> {{ $item->size }} &nbsp;&nbsp;</p>
-                           <div class="quantity-control">
-                                <form method="POST" action="{{ route('cart.update', $item->id) }}" class="quantity-form">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="button" class="qty-btn minus">−</button>
+                           <div class="quantity-control" data-id="{{ $item->id }}">
+                                <button type="button" class="qty-btn minus">−</button>
 
-                                    <!-- This hidden input is needed for the controller to receive the quantity -->
-                                    <input type="hidden" name="quantity" value="{{ $item->quantity }}">
+                                <span class="qty-display">{{ $item->quantity }}</span>
 
-                                    <span class="qty-display">{{ $item->quantity }}</span>
-
-                                    <button type="button" class="qty-btn plus">+</button>
-                                    <button type="submit" style="display: none;">Update</button>
-                                </form>
-
-                                <form method="POST" action="{{ route('cart.remove', $item->id) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="delete-btn" type="submit">Delete</button>
-                                </form>
+                                <button type="button" class="qty-btn plus">+</button>
+                                <button class="delete-btn" type="button">Delete</button>
                             </div>
                         </div>
                         <div class="price-details">
@@ -246,35 +233,101 @@
         }
     </style>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.quantity-form').forEach(function (form) {
-                const minusBtn = form.querySelector('.minus');
-                const plusBtn = form.querySelector('.plus');
-                const input = form.querySelector('input[name="quantity"]');
-                const display = form.querySelector('.qty-display');
-                const submitBtn = form.querySelector('button[type="submit"]');
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const csrfToken = '{{ csrf_token() }}';
 
-                minusBtn.addEventListener('click', function () {
-                    let qty = parseInt(input.value);
-                    if (qty > 1) {
-                        qty -= 1;
-                        input.value = qty;
-                        display.textContent = qty;
-                        submitBtn.click();
-                    }
-                });
+        document.querySelectorAll('.quantity-control').forEach(control => {
+            const qtyDisplay = control.querySelector('.qty-display');
+            const plusBtn = control.querySelector('.plus');
+            const minusBtn = control.querySelector('.minus');
+            const deleteBtn = control.querySelector('.delete-btn');
+            const itemId = control.dataset.id;
 
-                plusBtn.addEventListener('click', function () {
-                    let qty = parseInt(input.value);
-                    qty += 1;
-                    input.value = qty;
-                    display.textContent = qty;
-                    submitBtn.click();
-                });
+            let quantity = parseInt(qtyDisplay.textContent);
+
+            plusBtn.addEventListener('click', () => {
+                quantity += 1;
+                updateQuantity(itemId, quantity, qtyDisplay, control);
             });
+
+            minusBtn.addEventListener('click', () => {
+                if (quantity > 1) {
+                    quantity -= 1;
+                    updateQuantity(itemId, quantity, qtyDisplay, control);
+                }
+            });
+
+            deleteBtn.addEventListener('click', () => {
+                if (confirm("Are you sure you want to remove this item?")) {
+                    deleteItem(itemId, control);
+                }
+            });
+
+            function updateQuantity(id, qty, display, control) {
+                fetch(`/cart/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ quantity: qty })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    display.textContent = qty;
+
+                    // Update subtotal for the item
+                    const price = parseFloat(control.closest('.cart-item').querySelector('.price-details h3').textContent.replace('$', ''));
+                    const priceText = control.closest('.cart-item').querySelector('.price-details span');
+                    priceText.textContent = `x ${qty}`;
+
+                    // Recalculate subtotal and total quantity
+                    updateSubtotalAndCount();
+                });
+            }
+
+            function deleteItem(id, control) {
+                fetch(`/cart/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const item = control.closest('.cart-item');
+                    item.remove();
+
+                    updateSubtotalAndCount();
+                });
+            }
+
+            function updateSubtotalAndCount() {
+                let subtotal = 0;
+                let totalQty = 0;
+
+                document.querySelectorAll('.cart-item').forEach(item => {
+                    const price = parseFloat(item.querySelector('.price-details h3').textContent.replace('$', ''));
+                    const qty = parseInt(item.querySelector('.qty-display').textContent);
+
+                    subtotal += price * qty;
+                    totalQty += qty;
+                });
+
+                document.querySelectorAll('.subtotal strong').forEach(el => el.textContent = `$${subtotal.toFixed(2)}`);
+                document.querySelectorAll('.subtotal span').forEach(el => el.textContent = `Subtotal (${totalQty} items)`);
+
+                const checkoutLines = document.querySelectorAll('.checkout-line');
+                checkoutLines[0].querySelector('span').textContent = `Subtotal (${totalQty} items)`;
+                checkoutLines[0].querySelector('strong').textContent = `$${subtotal.toFixed(2)}`;
+                checkoutLines[1].querySelector('strong').textContent = `$${subtotal.toFixed(2)}`;
+            }
         });
-    </script>
+    });
+</script>
+
+
 
 
 </body>

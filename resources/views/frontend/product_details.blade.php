@@ -146,6 +146,10 @@
         display: none;
         z-index: 10;
     }
+    .toast-success {
+        background-color: #5C4730 !important; 
+        color: #fff !important;
+    }
 </style>
 
 <body>

@@ -129,9 +129,7 @@
             </div>
 
             <div class="table-responsive">
-              <table
-                id="add-row"
-                class="display table table-striped table-hover">
+              <table id="product-table" class="display table table-striped table-hover">
                 <thead>
                   <tr>
                     <th>Title</th>
@@ -140,7 +138,7 @@
                     <th>Price</th>
                     <th>Description</th>
                     <th>Image</th>
-                    <th style="width: 10%">Action</th>
+                    <th style="width: 15%">Action</th>
                   </tr>
                 </thead>
                 <tfoot>
@@ -195,6 +193,9 @@
                 </tbody>
 
               </table>
+              <div class="d-flex justify-content-center mt-3">
+  {!! $products->links('pagination::bootstrap-4') !!}
+</div>
             </div>
           </div>
         </div>
