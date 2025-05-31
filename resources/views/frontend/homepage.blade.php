@@ -7,31 +7,49 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>melanin</title>
-     <link rel="icon" type="image/x-icon" href="logo.png">
-   
+    <link rel="icon" type="image/x-icon" href="logo.png">
+
 
 </head>
 
 <body data-bs-spy="scroll" data-bs-target="#sideMenu" data-bs-offset="50" tabindex="0">
-    
+
+
+
+    @php
+    $carouselImages = [
+    $homepage->image_1,
+    $homepage->image_2,
+    $homepage->image_3,
+    ];
+
+    $bannerImages = [
+    [
+    'img' => $homepage->image_4,
+    'title' => $homepage->title,
+    'desc' => $homepage->description,
+    ],
+    [
+    'img' => $homepage->image_5,
+    'title' => $homepage->title,
+    'desc' => $homepage->description, ],
+    ];
+    @endphp
 
 
     <section class="px-5 style-carousel-section container-fluid py-4">
         <div class="row g-3">
-            <!-- Left Carousel -->
+            <!-- Left Carousel (image_1 to image_3) -->
             <div class="col-lg-9">
                 <div id="styleCarousel" class="carousel slide style-carousel" data-bs-ride="carousel">
                     <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/footer-1744188982-2.jpg" class="d-block w-100" alt="Style Image 1">
-
+                        @foreach($carouselImages as $index => $img)
+                        @if($img)
+                        <div class="carousel-item @if($index === 0) active @endif">
+                            <img src="{{ asset($img) }}" class="d-block w-100" alt="Style Image {{ $index + 1 }}">
                         </div>
-                        <div class="carousel-item">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/footer-1744188982-2.jpg" class="d-block w-100" alt="Style Image 2">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/footer-1744188982-2.jpg" class="d-block w-100" alt="Style Image 3">
-                        </div>
+                        @endif
+                        @endforeach
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#styleCarousel" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon"></span>
@@ -42,31 +60,29 @@
                 </div>
             </div>
 
-            <!-- Right Static Banners -->
+            <!-- Right Static Banners (image_4 & image_5) -->
             <div class="col-lg-3 d-flex flex-column justify-content-between gap-3">
+                @foreach($bannerImages as $index => $banner)
+                @if($banner['img'])
                 <div class="banner-card position-relative overflow-hidden">
-                    <img src="https://ishopp.ondocosmeticcoltd.com/uploads/footer-1744189309-1.jpg" class="img-fluid w-100" alt="New Arrival">
+                    <img src="{{ asset($banner['img']) }}" class="img-fluid w-100" alt="Banner Image {{ $index + 4 }}">
                     <div class="position-absolute top-0 start-0 w-100 h-100 banner-overlay text-white p-3 d-flex flex-column justify-content-between">
                         <div class="text-end">
                             <span class="badge bg-light text-dark">50% OFF</span>
                         </div>
                         <div>
-                            <h5 class="fw-bold">NEW ARRIVAL</h5>
-                            <p class="small">LIMITED EDITION</p>
-                            <!-- <a href="#" class="btn btn-primary btn-sm">SHOP NOW</a> -->
+                            <h5 class="fw-bold">{{ $banner['title'] ?? 'Default Title' }}</h5>
+                            <p class="small">{{ $banner['desc'] ?? 'Default Description' }}</p>
                         </div>
                     </div>
                 </div>
-                <div class="banner-card position-relative overflow-hidden">
-                    <img src="https://ishopp.ondocosmeticcoltd.com/uploads/footer-1744189327-4.jpg" class="img-fluid w-100" alt="Best Seller">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 banner-overlay text-white p-3 d-flex flex-column justify-content-between">
-                        <h6 class="fw-bold">OUR BEST SELLER</h6>
-                        <p class="small">( LEATHER BAG )</p>
-                    </div>
-                </div>
+                @endif
+                @endforeach
             </div>
+
         </div>
     </section>
+
 
     <!-- Info Icons Section -->
     <section id="info-section" class="px-5 info-icons container-fluid py-4">
@@ -134,169 +150,32 @@
                 <button class="carousel-btn left-btn" onclick="scrollCarousel(-1)">
                     <i class="fas fa-chevron-left"></i>
                 </button>
-<style>
-    a{
-        text-decoration: none;
-        color: black;
-    }
-</style>
+
                 <!-- Product slider -->
                 <div class="featured-carousel d-flex overflow-auto">
-                    <!-- Repeat this block for each product -->
+                    @foreach($featuredProducts as $product)
+                    @php
+                    $images = json_decode($product->images, true); // Decode JSON string to array
+                    $firstImage = isset($images[0]) ? asset($images[0]) : asset('default.jpg'); // Fallback if no image
+                    @endphp
                     <div class="product-card flex-shrink-0 me-3">
                         <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
+                            <img src="{{ $firstImage }}" class="img-fluid rounded" alt="{{ $product->name }}">
                         </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
+                        <a href="{{ url('product/details/'.$product->id) }}">
+                            <h6 class="mt-2 mb-1 text-truncate">{{ $product->title }}</h6>
+                        </a>
                         <div class="text-warning small">
                             ★★★★☆ <span class="text-muted">2 Reviews</span>
                         </div>
                         <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
+                            <div>
+                                <span class="fw-bold">${{ number_format($product->price, 2) }}</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-
-                    <!-- Copy & modify above block for more products -->
+                    @endforeach
                 </div>
-
                 <!-- Right button -->
                 <button class="carousel-btn right-btn" onclick="scrollCarousel(1)">
                     <i class="fas fa-chevron-right"></i>
@@ -304,6 +183,7 @@
             </div>
         </div>
     </section>
+
     <section id="trending" class="px-5 py-2">
         <div class="div1">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -319,159 +199,26 @@
 
                 <!-- Product slider -->
                 <div class="featured-carousel featured-carousel2 d-flex overflow-auto">
-                    <!-- Repeat this block for each product -->
+                    @foreach ($trendingProducts as $product)
+                    @php
+                    $images = json_decode($product->images, true); // Decode JSON string to array
+                    $firstImage = isset($images[0]) ? asset($images[0]) : asset('default.jpg'); // Fallback if no image
+                    @endphp
                     <div class="product-card flex-shrink-0 me-3">
                         <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
+                            <img src="{{ $firstImage }}" class="img-fluid rounded" alt="{{ $product->name }}">
                         </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
+                        <a href="{{ url('product/details', $product->id) }}">
+                            <h6 class="mt-2 mb-1 text-truncate">{{ $product->title }}</h6>
+                        </a>
                         <div class="text-warning small">
                             ★★★★☆ <span class="text-muted">2 Reviews</span>
                         </div>
                         <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
+                            <span class="fw-bold">${{ number_format($product->price, 2) }}</span>
                         </div>
                     </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-                    <div class="product-card flex-shrink-0 me-3">
-                        <div class="position-relative">
-                            <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190896-4.jpg" class="img-fluid rounded" alt="Product">
-                            <!-- Optional Badge -->
-                        </div>
-                          <a href="{{url('product/details')}}"><h6 class="mt-2 mb-1 text-truncate">Boots for women</h6></a>
-                        <div class="text-warning small">
-                            ★★★★☆ <span class="text-muted">2 Reviews</span>
-                        </div>
-                        <div>
-                            <del class="text-muted me-1">$100</del>
-                            <span class="fw-bold">$93</span>
-                            <span class="discount-badge">-7%</span>
-                        </div>
-                    </div>
-
-                    <!-- Copy & modify above block for more products -->
+                    @endforeach
                 </div>
 
                 <!-- Right button -->
@@ -483,16 +230,16 @@
     </section>
 
 
+
     <div class="mx-5 py-4 px-1 my-5 rounded bg-light">
         <div class="d-flex justify-content-between align-items-center mb-3 px-3">
             <h5 class="fw-bold">Featured Categories
-            <div style="display: inline ;padding-left: 20px;">
-                
-                <button class="nav-btn" onclick="scrollCategory(-1)">&#8592;</button>
-                <button class="nav-btn" onclick="scrollCategory(1)">&#8594;</button>
-            </div>
+                <div style="display: inline ;padding-left: 20px;">
+                    <button class="nav-btn" onclick="scrollCategory(-1)">&#8592;</button>
+                    <button class="nav-btn" onclick="scrollCategory(1)">&#8594;</button>
+                </div>
             </h5>
-            
+
             <a href="#" class="text-decoration-underline fw-medium small text-dark">Show all</a>
         </div>
 
@@ -500,58 +247,12 @@
 
             <!-- <div class="d-flex overflow-auto gap-3 flex-nowrap" id="categoryWrapper" style="scroll-behavior: smooth;"> -->
             <div class="d-flex overflow-auto gap-3 flex-nowrap" id="categoryWrapper" style="scroll-behavior: smooth;">
-
-                <div class="category-item text-center">
-                    <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-category-1744193892-6.jpg" class="img-fluid rounded mb-2" alt="Tops" />
-                    <div class="fw-semibold small">Tops</div>
-                </div>
-
-                <div class="category-item text-center">
-                    <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-category-1744193892-6.jpg" class="img-fluid rounded mb-2" alt="Tops" />
-                    <div class="fw-semibold small">Tops</div>
-                </div>
-
-                <div class="category-item text-center">
-                    <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-category-1744193892-6.jpg" class="img-fluid rounded mb-2" alt="Tops" />
-                    <div class="fw-semibold small">Tops</div>
-                </div>
-
-                <div class="category-item text-center">
-                    <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-category-1744193892-6.jpg" class="img-fluid rounded mb-2" alt="Tops" />
-                    <div class="fw-semibold small">Tops</div>
-                </div>
-
-                <div class="category-item text-center">
-                    <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-category-1744193892-6.jpg" class="img-fluid rounded mb-2" alt="Tops" />
-                    <div class="fw-semibold small">Tops</div>
-                </div>
-
-                <div class="category-item text-center">
-                    <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-category-1744193892-6.jpg" class="img-fluid rounded mb-2" alt="Tops" />
-                    <div class="fw-semibold small">Tops</div>
-                </div>
-
-                <div class="category-item text-center">
-                    <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-category-1744193892-6.jpg" class="img-fluid rounded mb-2" alt="Tops" />
-                    <div class="fw-semibold small">Tops</div>
-                </div>
-
-                <div class="category-item text-center">
-                    <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-category-1744193892-6.jpg" class="img-fluid rounded mb-2" alt="Tops" />
-                    <div class="fw-semibold small">Tops</div>
-                </div>
-
-                <div class="category-item text-center">
-                    <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-category-1744193892-6.jpg" class="img-fluid rounded mb-2" alt="Tops" />
-                    <div class="fw-semibold small">Tops</div>
-                </div>
-
-                <div class="category-item text-center">
-                    <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-category-1744193892-6.jpg" class="img-fluid rounded mb-2" alt="Tops" />
-                    <div class="fw-semibold small">Tops</div>
-                </div>
-
-                <!-- Add more items as needed -->
+                @foreach($allcategories as $category)
+                    <div class="category-item text-center">
+                        <img src="{{ asset('backend/categories/' . $category->image) }}" class="img-fluid rounded mb-2" alt="{{ $category->title }}">
+                        <div class="fw-semibold small">{{ $category->title }}</div>
+                    </div>
+                @endforeach
             </div>
 
         </div>
@@ -701,121 +402,29 @@
             <a href="#" class="text-decoration-underline small fw-medium text-dark">Show all</a>
         </div>
 
-        <div id="top-selling" class="row g-3">
-            <!-- Product Card -->
-            <div class="col-md-4 d-flex gap-2" style="align-items: center;">
-                <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190626-5.jpg" alt="Product" class="" width="80" height="80" style="object-fit: cover;">
-                <div>
-                    <div class="fw-semibold text-truncate" style="max-width: 200px;">charcoal-jeans</div>
-                    <div>
-                        <span class="text-muted text-decoration-line-through">$100</span>
-                        <span class="fw-bold mx-1">$95</span>
-                        <span class="badge bg-light text-dark small">-5%</span>
-                        <i class="bi bi-arrow-clockwise ms-1 text-muted"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 d-flex gap-2" style="align-items: center;">
-                <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190626-5.jpg" alt="Product" class="" width="80" height="80" style="object-fit: cover;">
-                <div>
-                    <div class="fw-semibold text-truncate" style="max-width: 200px;">charcoal-jeans</div>
-                    <div>
-                        <span class="text-muted text-decoration-line-through">$100</span>
-                        <span class="fw-bold mx-1">$95</span>
-                        <span class="badge bg-light text-dark small">-5%</span>
-                        <i class="bi bi-arrow-clockwise ms-1 text-muted"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 d-flex gap-2" style="align-items: center;">
-                <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190626-5.jpg" alt="Product" class="" width="80" height="80" style="object-fit: cover;">
-                <div>
-                    <div class="fw-semibold text-truncate" style="max-width: 200px;">charcoal-jeans</div>
-                    <div>
-                        <span class="text-muted text-decoration-line-through">$100</span>
-                        <span class="fw-bold mx-1">$95</span>
-                        <span class="badge bg-light text-dark small">-5%</span>
-                        <i class="bi bi-arrow-clockwise ms-1 text-muted"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 d-flex gap-2" style="align-items: center;">
-                <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190626-5.jpg" alt="Product" class="" width="80" height="80" style="object-fit: cover;">
-                <div>
-                    <div class="fw-semibold text-truncate" style="max-width: 200px;">charcoal-jeans</div>
-                    <div>
-                        <span class="text-muted text-decoration-line-through">$100</span>
-                        <span class="fw-bold mx-1">$95</span>
-                        <span class="badge bg-light text-dark small">-5%</span>
-                        <i class="bi bi-arrow-clockwise ms-1 text-muted"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 d-flex gap-2" style="align-items: center;">
-                <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190626-5.jpg" alt="Product" class="" width="80" height="80" style="object-fit: cover;">
-                <div>
-                    <div class="fw-semibold text-truncate" style="max-width: 200px;">charcoal-jeans</div>
-                    <div>
-                        <span class="text-muted text-decoration-line-through">$100</span>
-                        <span class="fw-bold mx-1">$95</span>
-                        <span class="badge bg-light text-dark small">-5%</span>
-                        <i class="bi bi-arrow-clockwise ms-1 text-muted"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 d-flex gap-2" style="align-items: center;">
-                <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190626-5.jpg" alt="Product" class="" width="80" height="80" style="object-fit: cover;">
-                <div>
-                    <div class="fw-semibold text-truncate" style="max-width: 200px;">charcoal-jeans</div>
-                    <div>
-                        <span class="text-muted text-decoration-line-through">$100</span>
-                        <span class="fw-bold mx-1">$95</span>
-                        <span class="badge bg-light text-dark small">-5%</span>
-                        <i class="bi bi-arrow-clockwise ms-1 text-muted"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 d-flex gap-2" style="align-items: center;">
-                <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190626-5.jpg" alt="Product" class="" width="80" height="80" style="object-fit: cover;">
-                <div>
-                    <div class="fw-semibold text-truncate" style="max-width: 200px;">charcoal-jeans</div>
-                    <div>
-                        <span class="text-muted text-decoration-line-through">$100</span>
-                        <span class="fw-bold mx-1">$95</span>
-                        <span class="badge bg-light text-dark small">-5%</span>
-                        <i class="bi bi-arrow-clockwise ms-1 text-muted"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 d-flex gap-2" style="align-items: center;">
-                <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190626-5.jpg" alt="Product" class="" width="80" height="80" style="object-fit: cover;">
-                <div>
-                    <div class="fw-semibold text-truncate" style="max-width: 200px;">charcoal-jeans</div>
-                    <div>
-                        <span class="text-muted text-decoration-line-through">$100</span>
-                        <span class="fw-bold mx-1">$95</span>
-                        <span class="badge bg-light text-dark small">-5%</span>
-                        <i class="bi bi-arrow-clockwise ms-1 text-muted"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 d-flex gap-2" style="align-items: center;">
-                <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744190626-5.jpg" alt="Product" class="" width="80" height="80" style="object-fit: cover;">
-                <div>
-                    <div class="fw-semibold text-truncate" style="max-width: 200px;">charcoal-jeans</div>
-                    <div>
-                        <span class="text-muted text-decoration-line-through">$100</span>
-                        <span class="fw-bold mx-1">$95</span>
-                        <span class="badge bg-light text-dark small">-5%</span>
-                        <i class="bi bi-arrow-clockwise ms-1 text-muted"></i>
-                    </div>
-                </div>
-            </div>
+        <div class="row g-3">
+            @foreach($topsellingProducts as $product)
+            <div class="col-md-4 d-flex gap-2 align-items-center">
+                @php
+                $images = json_decode($product->images, true);
+                @endphp
 
+                @if (!empty($images) && isset($images[0]))
+                <img src="{{ asset($images[0]) }}" alt="{{ $product->title }}" width="80" height="80" style="object-fit: cover;">
+                @else
+                <img src="{{ asset('default.jpg') }}" alt="No image" width="80" height="80" style="object-fit: cover;">
+                @endif
 
-
-            <!-- Continue for other 7 products similarly -->
+                <div>
+                    <div class="fw-semibold text-truncate" style="max-width: 200px;">{{ $product->title }}</div>
+                    <div>
+                        <span class="fw-bold mx-1">${{ number_format($product->price, 2) }}</span>
+                    </div>
+                </div>
+            </div>
+            @endforeach
         </div>
+
     </div>
 
     <!-- Bootstrap Icons CDN -->
@@ -829,232 +438,37 @@
     </section>
 
     <div class="px-5 my-4">
-        <div class="bg-light p-3 rounded">
-            <h5 class="mb-3 fw-bold">Daily discover</h5>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3">
-
-                <!-- Card Start -->
+    <div class="bg-light p-3 rounded">
+        <h5 class="mb-3 fw-bold">Daily Discover</h5>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3">
+            @foreach($allProducts as $product)
+                @php
+                    $images = json_decode($product->images, true);
+                @endphp
                 <div class="col">
                     <div class="card h-100 border-0">
-                        <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744192073-8.jpg" class="card-img-top" alt="Product">
-                        <div class="card-body p-2 ">
-                             <a href="{{url('product/details')}}"> <h6 class="card-title small fw-semibold">Anna by Anuschka Satchel Handbag | Genuine…</h6></a>
+                        <img src="{{ asset($images[0] ?? 'default.jpg') }}" class="card-img-top" alt="{{ $product->title }}" style="height: 150px; object-fit: cover;">
+                        <div class="card-body p-2">
+                            <a href="{{ url('product/details', $product->id) }}">
+                                <h6 class="card-title small fw-semibold">{{ Str::limit($product->title, 40) }}</h6>
+                            </a>
                             <div class="text-warning small">
                                 ★★★★☆ <span class="text-muted fw-bold">1 Reviews</span>
                             </div>
                             <div class="d-flex align-items-center mt-2">
-                                <small class="text-decoration-line-through text-muted me-2">$170</small>
-                                <h6 class="mb-0 me-2 text-dark fw-bold">$104</h6>
-                                <span class="badge bg-light text-dark border rounded-pill small">-39%</span>
+                                {{-- Assuming price is the current price, and you want to show an old price and discount --}}
+                                <small class="text-decoration-line-through text-muted me-2">${{ $product->price + 50 }}</small>
+                                <h6 class="mb-0 me-2 text-dark fw-bold">${{ $product->price }}</h6>
+                                <span class="badge bg-light text-dark border rounded-pill small">-{{ round(100 * 50 / ($product->price + 50)) }}%</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- Card End -->
-                <!-- Card Start -->
-                <div class="col">
-                    <div class="card h-100 border-0">
-                        <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744192073-8.jpg" class="card-img-top" alt="Product">
-                        <div class="card-body p-2 ">
-                             <a href="{{url('product/details')}}"> <h6 class="card-title small fw-semibold">Anna by Anuschka Satchel Handbag | Genuine…</h6></a>
-                            <div class="text-warning small">
-                                ★★★★☆ <span class="text-muted fw-bold">1 Reviews</span>
-                            </div>
-                            <div class="d-flex align-items-center mt-2">
-                                <small class="text-decoration-line-through text-muted me-2">$170</small>
-                                <h6 class="mb-0 me-2 text-dark fw-bold">$104</h6>
-                                <span class="badge bg-light text-dark border rounded-pill small">-39%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card End -->
-                <!-- Card Start -->
-                <div class="col">
-                    <div class="card h-100 border-0">
-                        <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744192073-8.jpg" class="card-img-top" alt="Product">
-                        <div class="card-body p-2 ">
-                             <a href="{{url('product/details')}}"> <h6 class="card-title small fw-semibold">Anna by Anuschka Satchel Handbag | Genuine…</h6></a>
-                            <div class="text-warning small">
-                                ★★★★☆ <span class="text-muted fw-bold">1 Reviews</span>
-                            </div>
-                            <div class="d-flex align-items-center mt-2">
-                                <small class="text-decoration-line-through text-muted me-2">$170</small>
-                                <h6 class="mb-0 me-2 text-dark fw-bold">$104</h6>
-                                <span class="badge bg-light text-dark border rounded-pill small">-39%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card End -->
-                <!-- Card Start -->
-                <div class="col">
-                    <div class="card h-100 border-0">
-                        <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744192073-8.jpg" class="card-img-top" alt="Product">
-                        <div class="card-body p-2 ">
-                             <a href="{{url('product/details')}}"> <h6 class="card-title small fw-semibold">Anna by Anuschka Satchel Handbag | Genuine…</h6></a>
-                            <div class="text-warning small">
-                                ★★★★☆ <span class="text-muted fw-bold">1 Reviews</span>
-                            </div>
-                            <div class="d-flex align-items-center mt-2">
-                                <small class="text-decoration-line-through text-muted me-2">$170</small>
-                                <h6 class="mb-0 me-2 text-dark fw-bold">$104</h6>
-                                <span class="badge bg-light text-dark border rounded-pill small">-39%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card End -->
-                <!-- Card Start -->
-                <div class="col">
-                    <div class="card h-100 border-0">
-                        <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744192073-8.jpg" class="card-img-top" alt="Product">
-                        <div class="card-body p-2 ">
-                             <a href="{{url('product/details')}}"> <h6 class="card-title small fw-semibold">Anna by Anuschka Satchel Handbag | Genuine…</h6></a>
-                            <div class="text-warning small">
-                                ★★★★☆ <span class="text-muted fw-bold">1 Reviews</span>
-                            </div>
-                            <div class="d-flex align-items-center mt-2">
-                                <small class="text-decoration-line-through text-muted me-2">$170</small>
-                                <h6 class="mb-0 me-2 text-dark fw-bold">$104</h6>
-                                <span class="badge bg-light text-dark border rounded-pill small">-39%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card End -->
-                <!-- Card Start -->
-                <div class="col">
-                    <div class="card h-100 border-0">
-                        <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744192073-8.jpg" class="card-img-top" alt="Product">
-                        <div class="card-body p-2 ">
-                             <a href="{{url('product/details')}}"> <h6 class="card-title small fw-semibold">Anna by Anuschka Satchel Handbag | Genuine…</h6></a>
-                            <div class="text-warning small">
-                                ★★★★☆ <span class="text-muted fw-bold">1 Reviews</span>
-                            </div>
-                            <div class="d-flex align-items-center mt-2">
-                                <small class="text-decoration-line-through text-muted me-2">$170</small>
-                                <h6 class="mb-0 me-2 text-dark fw-bold">$104</h6>
-                                <span class="badge bg-light text-dark border rounded-pill small">-39%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card End -->
-                <!-- Card Start -->
-                <div class="col">
-                    <div class="card h-100 border-0">
-                        <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744192073-8.jpg" class="card-img-top" alt="Product">
-                        <div class="card-body p-2 ">
-                             <a href="{{url('product/details')}}"> <h6 class="card-title small fw-semibold">Anna by Anuschka Satchel Handbag | Genuine…</h6></a>
-                            <div class="text-warning small">
-                                ★★★★☆ <span class="text-muted fw-bold">1 Reviews</span>
-                            </div>
-                            <div class="d-flex align-items-center mt-2">
-                                <small class="text-decoration-line-through text-muted me-2">$170</small>
-                                <h6 class="mb-0 me-2 text-dark fw-bold">$104</h6>
-                                <span class="badge bg-light text-dark border rounded-pill small">-39%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card End -->
-                <!-- Card Start -->
-                <div class="col">
-                    <div class="card h-100 border-0">
-                        <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744192073-8.jpg" class="card-img-top" alt="Product">
-                        <div class="card-body p-2 ">
-                             <a href="{{url('product/details')}}"> <h6 class="card-title small fw-semibold">Anna by Anuschka Satchel Handbag | Genuine…</h6></a>
-                            <div class="text-warning small">
-                                ★★★★☆ <span class="text-muted fw-bold">1 Reviews</span>
-                            </div>
-                            <div class="d-flex align-items-center mt-2">
-                                <small class="text-decoration-line-through text-muted me-2">$170</small>
-                                <h6 class="mb-0 me-2 text-dark fw-bold">$104</h6>
-                                <span class="badge bg-light text-dark border rounded-pill small">-39%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card End -->
-                <!-- Card Start -->
-                <div class="col">
-                    <div class="card h-100 border-0">
-                        <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744192073-8.jpg" class="card-img-top" alt="Product">
-                        <div class="card-body p-2 ">
-                             <a href="{{url('product/details')}}"> <h6 class="card-title small fw-semibold">Anna by Anuschka Satchel Handbag | Genuine…</h6></a>
-                            <div class="text-warning small">
-                                ★★★★☆ <span class="text-muted fw-bold">1 Reviews</span>
-                            </div>
-                            <div class="d-flex align-items-center mt-2">
-                                <small class="text-decoration-line-through text-muted me-2">$170</small>
-                                <h6 class="mb-0 me-2 text-dark fw-bold">$104</h6>
-                                <span class="badge bg-light text-dark border rounded-pill small">-39%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card End -->
-                <!-- Card Start -->
-                <div class="col">
-                    <div class="card h-100 border-0">
-                        <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744192073-8.jpg" class="card-img-top" alt="Product">
-                        <div class="card-body p-2 ">
-                             <a href="{{url('product/details')}}"> <h6 class="card-title small fw-semibold">Anna by Anuschka Satchel Handbag | Genuine…</h6></a>
-                            <div class="text-warning small">
-                                ★★★★☆ <span class="text-muted fw-bold">1 Reviews</span>
-                            </div>
-                            <div class="d-flex align-items-center mt-2">
-                                <small class="text-decoration-line-through text-muted me-2">$170</small>
-                                <h6 class="mb-0 me-2 text-dark fw-bold">$104</h6>
-                                <span class="badge bg-light text-dark border rounded-pill small">-39%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card End -->
-                <!-- Card Start -->
-                <div class="col">
-                    <div class="card h-100 border-0">
-                        <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744192073-8.jpg" class="card-img-top" alt="Product">
-                        <div class="card-body p-2 ">
-                             <a href="{{url('product/details')}}"> <h6 class="card-title small fw-semibold">Anna by Anuschka Satchel Handbag | Genuine…</h6></a>
-                            <div class="text-warning small">
-                                ★★★★☆ <span class="text-muted fw-bold">1 Reviews</span>
-                            </div>
-                            <div class="d-flex align-items-center mt-2">
-                                <small class="text-decoration-line-through text-muted me-2">$170</small>
-                                <h6 class="mb-0 me-2 text-dark fw-bold">$104</h6>
-                                <span class="badge bg-light text-dark border rounded-pill small">-39%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card End -->
-                <!-- Card Start -->
-                <div class="col">
-                    <div class="card h-100 border-0">
-                        <img src="https://ishopp.ondocosmeticcoltd.com/uploads/thumb-product-1744192073-8.jpg" class="card-img-top" alt="Product">
-                        <div class="card-body p-2 ">
-                             <a href="{{url('product/details')}}"> <h6 class="card-title small fw-semibold">Anna by Anuschka Satchel Handbag | Genuine…</h6></a>
-                            <div class="text-warning small">
-                                ★★★★☆ <span class="text-muted fw-bold">1 Reviews</span>
-                            </div>
-                            <div class="d-flex align-items-center mt-2">
-                                <small class="text-decoration-line-through text-muted me-2">$170</small>
-                                <h6 class="mb-0 me-2 text-dark fw-bold">$104</h6>
-                                <span class="badge bg-light text-dark border rounded-pill small">-39%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card End -->
-
-
-            </div>
-
+            @endforeach
         </div>
     </div>
+</div>
+
 
     <div class="px-5 my-4 text-center">
         <button class="show-more-btn">Show more</button>
@@ -1066,9 +480,6 @@
             <img style="border-radius: 12px;" width="100%" src="https://ishopp.ondocosmeticcoltd.com/uploads/banner-1744189530-5.jpg" alt="">
         </div>
     </section>
-
-
-
 
     <script>
         function scrollCarousel(direction) {

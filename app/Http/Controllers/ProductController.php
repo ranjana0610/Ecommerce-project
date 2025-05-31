@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\DB;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -80,6 +81,7 @@ class ProductController extends Controller
             'size' => 'required|string',
             'price' => 'required|numeric',
             'description' => 'required|string',
+             'ptype' => 'required|in:0,1,2,3',
             'images.*' => 'required|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
@@ -99,6 +101,7 @@ class ProductController extends Controller
             'size' => $request->size,
             'price' => $request->price,
             'description' => $request->description,
+            'ptype' => $request->ptype,
             'images' => $imagePaths,
         ]);
 
@@ -209,6 +212,7 @@ class ProductController extends Controller
         $product->title = $request->title;
         $product->category_id = $request->category_id;
         $product->size = $request->size;
+        $product->ptype = $request->ptype;
         $product->price = $request->price;
         $product->description = $request->description;
 
@@ -218,4 +222,53 @@ class ProductController extends Controller
 
         return redirect()->back()->with('success', 'Product updated successfully!');
     }
+
+    
+    // live search code start 
+
+  public function search(Request $request)
+{
+    $query = $request->input('query');
+
+    if (!$query) {
+        return response()->json([]);
+    }
+
+    $products = Product::where('title', 'like', '%' . $query . '%')
+                ->take(50) // fetch up to 50 items
+                ->get();
+
+    $html = '';
+
+    if ($products->isEmpty()) {
+        $html .= '<div class="list-group-item text-muted text-center">No results found</div>';
+    } else {
+       foreach ($products as $product) {
+    $slug = Str::slug($product->title); // Creates URL-friendly version
+    $html .= '<a href="/search/product/' . $product->id . '/' . $slug . '" class="list-group-item list-group-item-action">'
+             . htmlentities($product->title) .
+             '</a>';
+}
+
+    }
+
+    return response($html);
+}
+
+public function searchProductDetails($id, $slug)
+{
+    $product = Product::findOrFail($id);
+
+
+    $actualSlug = Str::slug($product->title);
+    if ($slug !== $actualSlug) {
+        return redirect()->route('search.product.details', ['id' => $product->id, 'slug' => $actualSlug]);
+    }
+
+    $images = json_decode($product->images, true);
+
+    return view('frontend.searchproduct_details', compact('product', 'images'));
+}
+
+
 }

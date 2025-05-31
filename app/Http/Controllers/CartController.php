@@ -60,6 +60,11 @@ class CartController extends Controller
         return view('frontend.cart', compact('cartItems'));
     }
 
+    
+    
+
+    
+
     public function update(Request $request, $id)
     {
         $cart = Cart::where('id', $id)->where('user_id', Auth::id())->firstOrFail();

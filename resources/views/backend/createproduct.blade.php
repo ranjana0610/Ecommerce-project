@@ -81,6 +81,15 @@
                 </div>
               </div>
             <div class="form-group mb-3">
+                <label for="ptype">Product Type</label>
+                <select class="form-control" name="ptype" id="ptype">
+                    <option value="0">Normal Products</option>
+                    <option value="1">Featured Products</option>
+                    <option value="2">Trending Products</option>
+                    <option value="3">Top Selling Products</option>
+                </select>
+            </div>
+            <div class="form-group mb-3">
               <label for="unitInput">Price</label>
               <input type="text" class="form-control" name="price" id="price">
             </div>

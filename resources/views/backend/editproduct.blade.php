@@ -89,6 +89,14 @@
                 </label>
               </div>
             </div>
+            <label for="ptype">Product Type</label>
+            <select class="form-control" name="ptype" id="ptype" required>
+                <option value="0" {{ $product->ptype == 0 ? 'selected' : '' }}>Normal Products</option>
+                <option value="1" {{ $product->ptype == 1 ? 'selected' : '' }}>Featured Products</option>
+                <option value="2" {{ $product->ptype == 2 ? 'selected' : '' }}>Trending Products</option>
+                <option value="3" {{ $product->ptype == 3 ? 'selected' : '' }}>Top Selling Products</option>
+            </select>
+
 
             <div class="form-group mb-3">
               <label for="unitInput">Price</label>

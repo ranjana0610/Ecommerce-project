@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\Product;
 
 class CategoryController extends Controller
 {
@@ -11,6 +12,7 @@ class CategoryController extends Controller
     {
         return view('backend.createcategory');
     }
+    
     public function viewcategory()
     {
         $categories = Category::all();
@@ -94,4 +96,20 @@ class CategoryController extends Controller
         return redirect()->route('category.view')->with('success', 'Category deleted successfully.');
     }
 
+
+    public function showCategories()
+    {
+        $categories = Category::all();
+        return view('frontend.categories', compact('categories'));
+    }
+
+    public function showProducts($id)
+    {
+        $category = Category::findOrFail($id);
+        $products = Product::where('category_id', $id)->get();
+
+        return view('frontend.products_by_category', compact('category', 'products'));
+    }
+
+    
 }

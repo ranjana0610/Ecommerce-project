@@ -7,9 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Responsive Category Page</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -20,10 +18,9 @@
 
     .category-wrapper {
       max-width: 1200px;
-      margin: 20px;
+      margin: 20px auto;
     }
 
-    
     .category-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -35,7 +32,6 @@
       background: #f9f9f9;
       border-radius: 12px;
       padding: 15px;
-      margin-top: 16px !important;
       text-align: center;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       width: 100%;
@@ -61,89 +57,20 @@
     }
 
     @media (max-width: 600px) {
-      .category-name {
-        font-size: 12px;
-      }
-
-      .category-item img {
-        width: 50px;
-        height: 50px;
-      }
+      .category-name { font-size: 12px; }
+      .category-item img { width: 50px; height: 50px; }
     }
   </style>
 </head>
 <body>
   <div class="category-wrapper">
-
     <div class="category-grid">
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/jacket.png" alt="Men's Wear" />
-        <div class="category-name">Men's Wear</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/dress-front-view.png" alt="Women Apparel" />
-        <div class="category-name">Women Apparel</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/dress-front-view.png" alt="Beauty" />
-        <div class="category-name">Beauty & Personal</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/jewelry.png" alt="Jewellery" />
-        <div class="category-name">Jewellery</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/dress-front-view.png" alt="Women's Bags" />
-        <div class="category-name">Women's Bags</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/dress-front-view.png" alt="Appliances" />
-        <div class="category-name">Appliances</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/sofa.png" alt="Living" />
-        <div class="category-name">Home & Living</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/dress-front-view.png" alt="Travel" />
-        <div class="category-name">Travel & Luggage</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/shoes.png" alt="Men's Shoes" />
-        <div class="category-name">Men's Shoes</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/dress-front-view.png" alt="Travel" />
-        <div class="category-name">Travel & Luggage</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/shoes.png" alt="Men's Shoes" />
-        <div class="category-name">Men's Shoes</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/dress-front-view.png" alt="Travel" />
-        <div class="category-name">Travel & Luggage</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/shoes.png" alt="Men's Shoes" />
-        <div class="category-name">Men's Shoes</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/dress-front-view.png" alt="Travel" />
-        <div class="category-name">Travel & Luggage</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/shoes.png" alt="Men's Shoes" />
-        <div class="category-name">Men's Shoes</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/dress-front-view.png" alt="Travel" />
-        <div class="category-name">Travel & Luggage</div>
-      </div>
-      <div class="category-item">
-        <img src="https://img.icons8.com/ios/100/000000/shoes.png" alt="Men's Shoes" />
-        <div class="category-name">Men's Shoes</div>
-      </div>
+      @foreach ($categories as $category)
+        <a href="{{ route('category.products', $category->id) }}" class="category-item">
+          <img src="{{ asset('backend/categories/' . $category->image) }}" alt="{{ $category->title }}" />
+          <div class="category-name">{{ $category->title }}</div>
+        </a>
+      @endforeach
     </div>
   </div>
 </body>

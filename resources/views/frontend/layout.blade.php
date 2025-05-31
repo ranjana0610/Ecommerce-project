@@ -17,7 +17,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
     <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
  <!-- Promo Image Banner with Close Button -->
@@ -58,7 +61,7 @@
     </div>
 
     <!-- Main Navbar -->
-    <div class=" container-fluid custom-navbar-main">
+    <div class=" container-fluid custom-navbar-main" style="z-index:0;">
         <div class="mx-5 d-flex justify-content-between align-items-center">
             <!-- Toggle & Logo -->
             <div class="d-flex align-items-center gap-3">
@@ -73,11 +76,121 @@
             </div>
 
             <!-- Search -->
-            <div class="input-group w-50 d-none d-lg-flex">
-                <input type="text" class="form-control custom-navbar-search" placeholder="Search Here" />
+            <!-- Search -->
+            <div class="input-group w-50 d-none d-lg-flex position-relative">
+                <input type="text" id="search-input" class="form-control custom-navbar-search" placeholder="Search Here" autocomplete="off" />
                 <button class="custom-navbar-search-btn"><i class="bi bi-search"></i></button>
-            </div>
 
+                <!-- Results will appear here -->
+                <div id="search-results" class="search-results-container">
+                </div>
+            </div>
+            <style>
+                #search-results {
+                    border-radius: 9px;
+                    background: #dbd8ca;
+                    color: white;
+                }
+
+                /* Base search input */
+                .custom-navbar-search {
+                    border-radius: 8px 0 0 8px;
+                    border: 1px solid #ced4da;
+                    padding: 10px;
+                    font-size: 16px;
+                    width: 100%;
+                }
+
+                /* Search button */
+                .custom-navbar-search-btn {
+                    border-radius: 0 8px 8px 0;
+                    border: 1px solid #ced4da;
+                    background-color: #f8f9fa;
+                    padding: 0 15px;
+                    font-size: 18px;
+                    cursor: pointer;
+                    transition: background-color 0.2s ease;
+                }
+
+                .custom-navbar-search-btn:hover {
+                    background-color: #e2e6ea;
+                }
+
+                /* Search results dropdown */
+                #search-results {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    z-index: 9999;
+                    width: 100%;
+                    border-radius: 9px;
+                    background: #dbd8ca;
+                    color: white;
+                    border: 1px solid #dee2e6;
+                    border-top: none;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                    display: none;
+                    max-height: calc(7 * 48px);
+                    /* Assuming 48px per item */
+                    overflow-y: auto;
+                }
+
+                /* Search item style */
+                #search-results a {
+                    padding: 12px 16px;
+                    display: block;
+                    color: #212529;
+                    text-decoration: none;
+                    font-size: 15px;
+                    border-bottom: 1px solid #f1f1f1;
+                    transition: background-color 0.2s ease;
+                }
+
+                #search-results a:last-child {
+                    border-bottom: none;
+                }
+
+                #search-results a:hover {
+                    background-color: #f8f9fa;
+                    color: #007bff;
+                }
+
+                /* Scrollbar styling */
+                #search-results::-webkit-scrollbar {
+                    width: 6px;
+                }
+
+                #search-results::-webkit-scrollbar-thumb {
+                    background-color: rgba(0, 0, 0, 0.2);
+                    border-radius: 6px;
+                }
+
+                /* Responsive tweaks */
+                @media (max-width: 768px) {
+                    .input-group.w-50 {
+                        width: 100% !important;
+                    }
+
+                    .custom-navbar-search,
+                    .custom-navbar-search-btn {
+                        font-size: 14px;
+                        padding: 8px;
+                    }
+
+                    #search-results a {
+                        font-size: 14px;
+                        padding: 10px 14px;
+                    }
+
+                    #search-results {
+                        max-height: 280px;
+                        /* or keep the same as desktop if preferred */
+                        border-radius: 9px;
+                        background: #dbd8ca;
+                        color: white;
+                    }
+                }
+            </style>
             <!-- Account + Cart -->
             <div class="d-flex align-items-center gap-4 myaccount">
                 <!-- My Account Dropdown -->
@@ -315,6 +428,65 @@
             <div class="text-center pt-2">© 2025 - All rights reserved by Melanin</div>
         </div>
     </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+    <script>
+        $(document).ready(function() {
+            $('#search-input').on('keyup', function() {
+                let query = $(this).val();
+                console.log("Query:", query); // Debug
+
+                if (query.length > 0) {
+                    $.ajax({
+                        url: "/live-search",
+                        type: "GET",
+                        data: {
+                            query: query
+                        },
+                        success: function(data) {
+                            console.log("Response:", data); // Debug
+                            $('#search-results').html(data).show();
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("AJAX Error:", error); // Debug
+                        }
+                    });
+                } else {
+                    $('#search-results').hide();
+                }
+            });
+            // Hide dropdown when clicking outside
+            $(document).click(function(e) {
+                if (!$(e.target).closest('#search-input, #search-results').length) {
+                    $('#search-results').hide();
+                }
+            });
+        });
+    </script>
+ <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const editBtn = document.querySelector('.edit-btn');
+    const form = document.getElementById('shipping-form');
+
+    editBtn.addEventListener('click', function () {
+      form.action = "{{ url('/shipping/update') }}"; // update route
+
+      document.querySelector('[name="id"]').value = this.dataset.id;
+      document.querySelector('[name="country"]').value = this.dataset.country;
+      document.querySelector('[name="email"]').value = this.dataset.email;
+      document.querySelector('[name="name"]').value = this.dataset.name;
+      document.querySelector('[name="phone"]').value = this.dataset.phone;
+      document.querySelector('[name="address"]').value = this.dataset.address;
+      document.querySelector('[name="city"]').value = this.dataset.city;
+      document.querySelector('[name="zip_code"]').value = this.dataset.zip;
+      document.querySelector('[name="state"]').value = this.dataset.state;
+      document.querySelector('[name="delivery_instruction"]').value = this.dataset.instruction;
+    });
+  });
+</script>
+
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

@@ -89,7 +89,9 @@
                         <span>Total</span>
                         <strong>${{ number_format($subtotal, 2) }}</strong>
                     </div>
-                    <button class="checkout-btn">Proceed to checkout</button>
+                    <a href="{{ route('shipping.index') }}">
+                        <button class="checkout-btn">Proceed to checkout</button>
+                    </a>
                 </div>
             </div>
 

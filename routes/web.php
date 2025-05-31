@@ -7,11 +7,10 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ShippingController;
 
-
-Route::get('/', function () {
-    return view('frontend.homepage');
-});
+Route::get('/', [HomeController::class, 'homepage'])->name('homepage');
 Route::get('/contactus', function () {
     return view('frontend.contactUs');
 });
@@ -31,10 +30,22 @@ Route::get('/cart', function () {
 Route::get('/categories', function () {
     return view('frontend.categories');
 });
+Route::get('/categories', [CategoryController::class, 'showCategories'])->name('categories.list');
+Route::get('/categories/{id}', [CategoryController::class, 'showProducts'])->name('category.products');
 Route::get('/lead', function () {
     return view('frontend.lead');
 });
 Route::get('/product/details/{id}', [ShopController::class, 'details'])->name('product.details');
+// Route::get('/shippingdata', function () {
+//     return view('frontend.shipping');
+// })->name('shipping.details');
+Route::get('/shipping', [ShippingController::class, 'index'])->name('shipping.index');
+Route::post('/shipping/store', [ShippingController::class, 'store'])->name('shipping.store');
+// Route::get('/shipping-cart', [CartController::class, 'shippingCart'])->name('shipping.cart');
+
+Route::get('/product/details/{id}', [ShopController::class, 'details'])->name('product.details');
+Route::get('/live-search', [ProductController::class, 'search'])->name('live.search');
+Route::get('/search/product/{id}/{slug}', [ProductController::class, 'searchProductDetails'])->name('search.product.details');
 
 Route::middleware([
     'auth:sanctum',
@@ -61,6 +72,16 @@ Route::middleware([
         Route::get('/category/edit/{id}', [CategoryController::class, 'edit'])->name('category.edit');
         Route::delete('/category/delete/{id}', [CategoryController::class, 'destroy'])->name('category.delete');
         Route::put('/category/update/{id}', [CategoryController::class, 'update'])->name('category.update');
+
+        Route::get('/home-slider/create', [HomeController::class, 'create'])->name('home.add');
+        Route::post('/home-slider/store', [HomeController::class, 'store'])->name('home.store');
+        Route::get('/home-slider/view', [HomeController::class, 'index'])->name('home.view');
+        Route::get('/home-slider/edit/{id}', [HomeController::class, 'edit'])->name('home.edit');
+        Route::put('/home-slider/update/{id}', [HomeController::class, 'update'])->name('home.update');
+        Route::delete('/home-slider/delete/{id}', [HomeController::class, 'destroy'])->name('home.delete');
+        Route::post('/home/delete-image', [HomeController::class, 'deleteImage'])->name('home.delete.image');
+
+
      });
     
     Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile')->middleware('auth');

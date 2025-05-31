@@ -167,10 +167,11 @@
 
                     <!-- Thumbnail Images -->
                     <div class="justify-content-center thumbnail-row d-flex gap-2 flex-wrap">
-                        @foreach($images as $image)
-                            <img src="{{ asset($image) }}" class="thumb-img border" onclick="changeImage(this)">
-                        @endforeach
-                    </div>
+    @foreach($images as $image)
+        <img src="{{ asset($image) }}" class="thumb-img border" onclick="changeImage(this)">
+    @endforeach
+</div>
+
                 </div>
 
                 <!-- Right: Product Details -->
@@ -182,7 +183,7 @@
                     <div class="product-details">
                         <p><strong>Bundle deal:</strong> <button class="bogo-btn">BOGO</button></p>
                         <p><strong>Brand:</strong> Apple</p>
-                        <p><strong>Size:</strong> <button class="size-btn">{{ $size_name }}</button></p>
+                        <p><strong>Size:</strong> <button class="size-btn">{{ $product->size }}</button></p>
                         <p><strong>Refund & warranty:</strong><br />Refundable<br />Change of mind is not applicable</p>
                         <p><strong>Authenticity:</strong> 100% authentic</p>
                     </div>
@@ -227,7 +228,7 @@
             </div>
 
             <input type="hidden" id="product_id" value="{{ $product->id }}">
-            <input type="hidden" id="size" value="{{ $size_name }}"> 
+            <input type="hidden" id="size" value="{{ $product->size }}"> 
 
         </div>
 
